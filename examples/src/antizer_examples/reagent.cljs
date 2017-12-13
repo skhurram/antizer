@@ -87,39 +87,32 @@
                   (ant/message-info (str "You have selected: " (map :name selected))))}}]])))
 
 (defn user-form [display-buttons?]
-  (fn [props]
-    (let [form (ant/get-form)]
-        [ant/form {:layout "horizontal"}
-          [ant/form-item (merge common/form-style {:label "Name"})
-            (ant/decorate-field form "name" {:rules [{:required true}]} 
-              [ant/input])]
-          [ant/form-item (merge common/form-style {:label "Email"})
-            (ant/decorate-field form "email" {:rules [{:required true} {:type "email"}]} 
-              [ant/input])]
-          [ant/form-item (merge common/form-style {:label "Address"})
-            (ant/decorate-field form "address" {:initial-value "Some initial value" :rules [{:required true}]} 
-              [ant/input])]
-          [ant/form-item (merge common/form-style {:label "Years of Experience"})
-            (ant/decorate-field form "experience" {:rules [{:required true}]} 
-              [ant/radio-group
-                [ant/radio {:value 1} "1-10"]
-                [ant/radio {:value 10} "10-30"]
-                [ant/radio {:value 30} "30-50"]
-                [ant/radio {:value 50} "> 50"]])]
-          [ant/form-item (merge common/form-style {:label "Start Date"})
-            (ant/decorate-field form "date" {:initial-value (js/moment) :rules [{:required true}]} 
-              [ant/date-picker {:format "MMM Do YYYY"}])]
-          [ant/form-item (merge common/form-style {:label "Accept Terms?"})
-            (ant/decorate-field form "accept-terms"
-              [ant/switch])]
-          (if display-buttons?
-            [ant/form-item {:wrapper-col {:offset 6}}
-              [ant/col {:span 4}
-                [ant/button {:type "primary" :on-click #(ant/validate-fields form)}
-                  "Submit"]]
-              [ant/col {:offset 1}
-                [ant/button {:on-click #(ant/reset-fields form)}
-                  "Reset"]]])])))
+  (let [data (r/atom {:id 12})]
+    (fn [props]
+     (let [form (ant/get-form)]
+       [ant/form {:layout "horizontal"}
+        [ant/form-item (merge common/form-style {:label "User id"})
+         (ant/decorate-field form "userId" {
+                                            :initial-value (:id @data)
+                                            :rules [{:required true}]
+                                            :value (:id @data)
+                                            :on-change #(swap! data assoc :id (-> % .-target .-value))
+                                            }
+                             [ant/input])]
+        [ant/form-item (merge common/form-style {:label "User id"})
+         [:input.ant-input.ant-input-lg
+          {:type        :text
+           :placeholder "placeholder"
+           :value       (:id @data)
+           :on-change   #(swap! data assoc :id (-> % .-target .-value))}]]
+        (if display-buttons?
+          [ant/form-item {:wrapper-col {:offset 6}}
+           [ant/col {:span 4}
+            [ant/button {:type "primary" :on-click #(swap! data assoc :id 5)}
+             "Change user id 5"]]
+           [ant/col {:offset 1}
+            [ant/button {:type "primary" :on-click #(swap! data assoc :id 7)}
+             "Change user id to 7"]]])]))))
 
 (defn form-example []
   [:div 
